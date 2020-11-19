@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.content {
+    width: 200px;
+    height: 100px;
+    border-width: 0.1rem;
+    border-color: black;
+    overflow: hidden;
+    margin-bottom: 10px;
+    background-color: gray;
+}
+
+.solid-border {
+    border-style: solid;
+}
+
+.hidden-border {
+    border-style: none;
+}
+
+.incomplete-border {
+    border-style: solid;
+    border-top-style: none;
+}
+
+.rounded-border {
+    border-radius: 0.6rem;
+}
+
+.dot {
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+    animation: 3s ease-in 1s infinite reverse both running slidein;
+}
+
+.bad-clip {
+    background-color: red;
+}
+
+.good-clip {
+    background-color: green;
+}
+
+@keyframes slidein{
+    50% {
+        transform: translate(200px, 0);
+    }
+}
+
+p {
+    position:absolute; left: 220px; 
+}
+
+</style>
+</head>
+
+<body>
+<p> Complex clip : hidden and painted sides MIXED in ROUNDED border</p>
+<div class="content rounded-border incomplete-border">
+    <div class="dot bad-clip"> </div>
+</div>
+<p> Simple clip : hidden and painted sides MIXED in NORMAL border</p>
+<div class="content incomplete-border">
+    <div class="dot good-clip"> </div>
+</div>
+<p> Complex clip : sides with DIFFERENT WIDTH in ROUNDED border</p>
+<div class="content solid-border rounded-border" style="border-top-width: 5px;">
+    <div class="dot bad-clip"> </div>
+</div>
+<p> Simple clip : sides with DIFFERENT WIDTH in NORMAL border</p>
+<div class="content solid-border" style="border-top-width: 5px;">
+    <div class="dot good-clip"> </div>
+</div>
+<p> Simple clip : ALL hidden sides in ROUNDED border </p>
+<div class="content rounded-border hidden-border">
+    <div class="dot good-clip"> </div>
+</div>
+<p> Simple clip : ALL hidden sides in NORMAL border </p>
+<div class="content hidden-border">
+    <div class="dot good-clip"> </div>
+</div>
+<p> Simple clip : ALL painted sides in SOLID border </p>
+<div class="content rounded-border solid-border">
+    <div class="dot good-clip"> </div>
+</div>
+<p> Simple clip : ALL painted sides in NORMAL border </p>
+<div class="content solid-border">
+    <div class="dot good-clip"> </div>
+</div>
+<p> Simple clip : ALL painted sides (with different styles) in ROUNDED border </p>
+<div class="content rounded-border" style="border-top-style: dotted; border-left-style: dashed; border-bottom-style: groove; border-right-style: outset;">
+    <div class="dot good-clip"> </div>
+</div>
+</body>
+</html>
