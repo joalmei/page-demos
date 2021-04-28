@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.content {
+    width: 1500px;
+    height: 200px;
+    border-width: 0.1rem;
+    border-color: black;
+    overflow: hidden;
+    margin-bottom: 10px;
+    background-color: lightgray;
+}
+
+.solid-border {
+    border-style: solid;
+}
+
+canvas {
+    touch-action: none;
+}
+
+</style>
+</head>
+
+<body>
+<canvas id="board" class="content solid-border"></canvas>
+<p id="ids" style="font-size: small">Pointer Ids: </p>
+</body>
+
+<script type="text/javascript">
+
+var board = document.getElementById("board")
+var pointeractive = false;
+
+board.addEventListener('pointerdown', function(event){
+    document.getElementById("ids").innerHTML += "<br>" + event.pointerId;
+    pointeractive = true;
+}, false);
+
+board.addEventListener('pointermove', function(event){
+    if(pointeractive)
+        document.getElementById("ids").innerHTML += ", " + event.pointerId;
+}, false);
+
+board.addEventListener('pointerup', function(event){
+    document.getElementById("ids").innerHTML += ", " + event.pointerId;
+    pointeractive = false;
+}, false);
+
+
+</script>
+</html>
