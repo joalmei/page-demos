@@ -3,7 +3,7 @@
 <head>
 <style>
 .content {
-    width: 1500px;
+    width: 100%;
     height: 200px;
     border-width: 0.1rem;
     border-color: black;
@@ -26,10 +26,24 @@
   text-align: center;
 }
 
+.floating-box{
+  border: 1px solid rgba(0, 0, 0, 1);
+  position: absolute;
+  z-index: 2;
+  width: 120px;
+  height: 50px;
+  padding:0;
+  font-size: smaller;
+  background-color: aqua;
+  visibility: hidden;
+}
+.overlay {
+    z-index: 1;
+}
+
 canvas {
     touch-action: none;
 }
-
 </style>
 </head>
 
@@ -39,7 +53,14 @@ canvas {
     <div id="down" class="grid-item">pointer down</div>
     <div id="up" class="grid-item">pointer up</div>
     <div id="ids" class="grid-item">pointer ids</div>
-  </div>
+</div>
+
+<div id="overlay" class="overlay"></div>
+<div id="box-pen" class="floating-box" style="left: 10px; top: 10px">
+    <div>pointer id: </div>
+    <div>pointer down: </div>
+    <div>pointer up: </div>
+</div>
 </body>
 
 <script type="text/javascript">
@@ -47,24 +68,9 @@ canvas {
 var board = document.getElementById("board")
 var pointeractive = false;
 var event_number = 0;
+var floating_boxes = {};
 
-board.addEventListener('pointerdown', function(event){
-    createNewGridLine();
-    
-    document.getElementById("down").innerHTML += event_number++ + "  ( " + event.pointerId + " )";
-    pointeractive = true;
-}, false);
-
-board.addEventListener('pointermove', function(event){
-    if(pointeractive)
-        document.getElementById("ids").innerHTML += event.pointerId + ", ";
-}, false);
-
-board.addEventListener('pointerup', function(event){
-    document.getElementById("up").innerHTML += event_number++ + "  ( " + event.pointerId + " )";
-    pointeractive = false;
-}, false);
-
+// Grid utils
 function createGridDiv(name){
     document.getElementById(name).id = "";
     var element = document.createElement("div");
@@ -79,6 +85,59 @@ function createNewGridLine() {
     createGridDiv("ids");
 }
 
+// Floating boxes for pointer events info utils
+function floatingBox(id) {
+    if (!floating_boxes[id]){
+        var clone = document.getElementById("box-pen").cloneNode(true);
+        clone.style.visibility = "visible";
+        clone.removeAttribute("id");
+        for (var i = 0; i < clone.childrenCount; i++) clone.children[i].removeAttribute("id");
+        document.getElementById("overlay").appendChild(clone);
+        floating_boxes[id] = {
+            box: clone,
+            pointer_id: clone.children[0],
+            pointer_down: clone.children[1],
+            pointer_up: clone.children[2]
+        };
+
+    }
+    return floating_boxes[id] 
+}
+
+function setFloatingBoxPosition(id, position) {
+    var floating_box = floatingBox(id);
+    floating_box.box.style.left = position.x + "px";
+    floating_box.box.style.top = position.y + "px";
+    return floating_box
+}
+
+// PointerEvent listeners
+board.addEventListener('pointerdown', function(event){
+    createNewGridLine();
+    
+    document.getElementById("down").innerHTML += event_number + "  ( " + event.pointerId + " )";
+    pointeractive = true;
+
+    var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
+    floating_box.pointer_id.innerHTML += " " + event.pointerId;
+    floating_box.pointer_down.innerHTML += " " + event_number;
+}, false);
+
+board.addEventListener('pointermove', function(event){
+    if(pointeractive) {
+        document.getElementById("ids").innerHTML += event.pointerId + ", ";
+        setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
+    }
+}, false);
+
+board.addEventListener('pointerup', function(event){
+    document.getElementById("up").innerHTML += event_number + "  ( " + event.pointerId + " )";
+    var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
+    floating_box.pointer_up.innerHTML += " " + event_number;
+
+    pointeractive = false;
+    event_number++;
+}, false);
 
 </script>
 </html>
