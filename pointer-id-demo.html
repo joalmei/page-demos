@@ -122,6 +122,8 @@ board.addEventListener('pointerdown', function(event){
     floating_box.pointer_id.innerHTML += " " + event.pointerId;
     floating_box.pointer_down.innerHTML += " " + event_number;
     floating_box.is_active = true;
+
+    event_number++;
 }, false);
 
 board.addEventListener('pointermove', function(event){
@@ -136,6 +138,7 @@ board.addEventListener('pointerup', function(event){
     var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
     floating_box.pointer_up.innerHTML += " " + event_number;
     floating_box.is_active = false;
+    
     event_number++;
 }, false);
 
