@@ -36,6 +36,7 @@
   font-size: smaller;
   background-color: aqua;
   visibility: hidden;
+  pointer-events: none;
 }
 .overlay {
     z-index: 1;
@@ -66,7 +67,6 @@ canvas {
 <script type="text/javascript">
 
 var board = document.getElementById("board")
-var pointeractive = false;
 var event_number = 0;
 var floating_boxes = {};
 
@@ -97,7 +97,8 @@ function floatingBox(id) {
             box: clone,
             pointer_id: clone.children[0],
             pointer_down: clone.children[1],
-            pointer_up: clone.children[2]
+            pointer_up: clone.children[2],
+            is_active: false
         };
 
     }
@@ -116,17 +117,17 @@ board.addEventListener('pointerdown', function(event){
     createNewGridLine();
     
     document.getElementById("down").innerHTML += event_number + "  ( " + event.pointerId + " )";
-    pointeractive = true;
 
     var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
     floating_box.pointer_id.innerHTML += " " + event.pointerId;
     floating_box.pointer_down.innerHTML += " " + event_number;
+    floating_box.is_active = true;
 }, false);
 
 board.addEventListener('pointermove', function(event){
-    if(pointeractive) {
+    var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
+    if(floating_box.is_active) {
         document.getElementById("ids").innerHTML += event.pointerId + ", ";
-        setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
     }
 }, false);
 
@@ -134,8 +135,7 @@ board.addEventListener('pointerup', function(event){
     document.getElementById("up").innerHTML += event_number + "  ( " + event.pointerId + " )";
     var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
     floating_box.pointer_up.innerHTML += " " + event_number;
-
-    pointeractive = false;
+    floating_box.is_active = false;
     event_number++;
 }, false);
 
