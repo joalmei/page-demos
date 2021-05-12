@@ -16,6 +16,16 @@
     border-style: solid;
 }
 
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  padding: 10px;
+}
+.grid-item {
+  border: 1px solid rgba(0, 0, 0, 1);
+  text-align: center;
+}
+
 canvas {
     touch-action: none;
 }
@@ -25,28 +35,49 @@ canvas {
 
 <body>
 <canvas id="board" class="content solid-border"></canvas>
-<p id="ids" style="font-size: small">Pointer Ids: </p>
+<div id="grid" class="grid-container">
+    <div id="down" class="grid-item">pointer down</div>
+    <div id="up" class="grid-item">pointer up</div>
+    <div id="ids" class="grid-item">pointer ids</div>
+  </div>
 </body>
 
 <script type="text/javascript">
 
 var board = document.getElementById("board")
 var pointeractive = false;
+var event_number = 0;
 
 board.addEventListener('pointerdown', function(event){
-    document.getElementById("ids").innerHTML += "<br>" + event.pointerId;
+    createNewGridLine();
+    
+    document.getElementById("down").innerHTML += event_number++ + "  ( " + event.pointerId + " )";
     pointeractive = true;
 }, false);
 
 board.addEventListener('pointermove', function(event){
     if(pointeractive)
-        document.getElementById("ids").innerHTML += ", " + event.pointerId;
+        document.getElementById("ids").innerHTML += event.pointerId + ", ";
 }, false);
 
 board.addEventListener('pointerup', function(event){
-    document.getElementById("ids").innerHTML += ", " + event.pointerId;
+    document.getElementById("up").innerHTML += event_number++ + "  ( " + event.pointerId + " )";
     pointeractive = false;
 }, false);
+
+function createGridDiv(name){
+    document.getElementById(name).id = "";
+    var element = document.createElement("div");
+    element.className = "grid-item";
+    element.id = name;
+    document.getElementById("grid").appendChild(element);
+}
+
+function createNewGridLine() {
+    createGridDiv("down");
+    createGridDiv("up");
+    createGridDiv("ids");
+}
 
 
 </script>
