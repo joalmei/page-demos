@@ -2,13 +2,18 @@
 <html>
 <head>
 <style>
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 5px;
+}
+
 .content {
     width: 100%;
     height: 100%;
     border-width: 0.1rem;
     border-color: black;
     overflow: hidden;
-    margin-bottom: 10px;
     background-color: lightgray;
 }
 
@@ -30,8 +35,8 @@
   border: 1px solid rgba(0, 0, 0, 1);
   position: absolute;
   z-index: 2;
-  width: 240px;
-  height: 100px;
+  width: 270px;
+  height: 120px;
   padding:0;
   font-size: smaller;
   background-color: aqua;
@@ -58,9 +63,9 @@ canvas {
 
 <div id="overlay" class="overlay"></div>
 <div id="box-pen" class="floating-box" style="left: 10px; top: 10px">
-    <div style="font-size: x-large;">pointer id: </div>
-    <div style="font-size: x-large;">pointer down: </div>
-    <div style="font-size: x-large;">pointer up: </div>
+    <div style="font-size: xx-large;">pointer id: </div>
+    <div style="font-size: xx-large;">pointer down: </div>
+    <div style="font-size: xx-large;">pointer up: </div>
 </div>
 </body>
 
