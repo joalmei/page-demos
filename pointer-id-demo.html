@@ -54,7 +54,7 @@ p {
 </head>
 
 <body>
-<canvas id="board"></canvas>
+    <canvas id="board" width="1664" height="999"></canvas>
 
 <div id="overlay" class="overlay"></div>
 <div id="box-pen" class="floating-box">
@@ -97,10 +97,36 @@ function floatingBox(id) {
     return floating_boxes[id] 
 }
 
+function overlaps(position, box) {
+    // The boxes will overlap if
+    // pos.x in [box.x - w, box.y + w] && pos.y in [box.y - h, box.y + h]
+    // as both boxes have the same widht/height, we can use w = box.offsetWidth, h = box.offsetHeight
+    return position.x > box.offsetLeft - box.offsetWidth && position.x < box.offsetLeft + box.offsetWidth
+        && position.y > box.offsetTop - box.offsetHeight && position.y < box.offsetTop + box.offsetHeight;
+}
+
+function raycastAndReturnFreeSpot(id, position){
+    var on_free_space = false;
+    while (!on_free_space) {
+        on_free_space = true;
+        for (var i in floating_boxes) {
+            if (i == id) continue;
+            let box = floating_boxes[i].box;
+            if(overlaps(position, box)) {
+                on_free_space = false;
+                position.x = box.offsetLeft + box.offsetWidth;
+                break;
+            }
+        }
+    }
+    return position;
+}
+
 function setFloatingBoxPosition(id, position) {
     var floating_box = floatingBox(id);
-    floating_box.box.style.left = position.x + "px";
-    floating_box.box.style.top = position.y + "px";
+    box_position = raycastAndReturnFreeSpot(id, position);
+    floating_box.box.style.left = box_position.x + "px";
+    floating_box.box.style.top = box_position.y + "px";
     return floating_box
 }
 
