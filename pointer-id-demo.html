@@ -2,36 +2,26 @@
 <html>
 <head>
 <style>
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
 .content {
     width: 100%;
-    height: 200px;
+    height: 100%;
+    border-style: solid;
     border-width: 0.1rem;
     border-color: black;
-    overflow: hidden;
-    margin-bottom: 10px;
     background-color: lightgray;
-}
-
-.solid-border {
-    border-style: solid;
-}
-
-.grid-container {
-  display: grid;
-  grid-template-columns: auto auto auto;
-  padding: 10px;
-}
-.grid-item {
-  border: 1px solid rgba(0, 0, 0, 1);
-  text-align: center;
 }
 
 .floating-box{
   border: 1px solid rgba(0, 0, 0, 1);
   position: absolute;
   z-index: 2;
-  width: 120px;
-  height: 50px;
+  width: 270px;
+  height: 120px;
   padding:0;
   font-size: smaller;
   background-color: aqua;
@@ -49,18 +39,13 @@ canvas {
 </head>
 
 <body>
-<canvas id="board" class="content solid-border"></canvas>
-<div id="grid" class="grid-container">
-    <div id="down" class="grid-item">pointer down</div>
-    <div id="up" class="grid-item">pointer up</div>
-    <div id="ids" class="grid-item">pointer ids</div>
-</div>
+<canvas id="board" class="content"></canvas>
 
 <div id="overlay" class="overlay"></div>
 <div id="box-pen" class="floating-box" style="left: 10px; top: 10px">
-    <div>pointer id: </div>
-    <div>pointer down: </div>
-    <div>pointer up: </div>
+    <div style="font-size: xx-large;">pointer id: </div>
+    <div style="font-size: xx-large;">pointer down: </div>
+    <div style="font-size: xx-large;">pointer up: </div>
 </div>
 </body>
 
@@ -69,21 +54,6 @@ canvas {
 var board = document.getElementById("board")
 var event_number = 0;
 var floating_boxes = {};
-
-// Grid utils
-function createGridDiv(name){
-    document.getElementById(name).id = "";
-    var element = document.createElement("div");
-    element.className = "grid-item";
-    element.id = name;
-    document.getElementById("grid").appendChild(element);
-}
-
-function createNewGridLine() {
-    createGridDiv("down");
-    createGridDiv("up");
-    createGridDiv("ids");
-}
 
 // Floating boxes for pointer events info utils
 function floatingBox(id) {
@@ -100,6 +70,7 @@ function floatingBox(id) {
             pointer_up: clone.children[2],
             is_active: false
         };
+        floating_boxes[id].pointer_id.innerHTML += " " + id;
 
     }
     return floating_boxes[id] 
@@ -114,12 +85,7 @@ function setFloatingBoxPosition(id, position) {
 
 // PointerEvent listeners
 board.addEventListener('pointerdown', function(event){
-    createNewGridLine();
-    
-    document.getElementById("down").innerHTML += event_number + "  ( " + event.pointerId + " )";
-
     var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
-    floating_box.pointer_id.innerHTML += " " + event.pointerId;
     floating_box.pointer_down.innerHTML += " " + event_number;
     floating_box.is_active = true;
 
@@ -134,11 +100,10 @@ board.addEventListener('pointermove', function(event){
 }, false);
 
 board.addEventListener('pointerup', function(event){
-    document.getElementById("up").innerHTML += event_number + "  ( " + event.pointerId + " )";
     var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
     floating_box.pointer_up.innerHTML += " " + event_number;
     floating_box.is_active = false;
-    
+
     event_number++;
 }, false);
 
