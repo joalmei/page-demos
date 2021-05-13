@@ -56,7 +56,7 @@ p {
 <canvas id="board"></canvas>
 
 <div id="overlay" class="overlay"></div>
-<div id="box-pen" class="floating-box" style="left: 10px; top: 10px">
+<div id="box-pen" class="floating-box">
     <div style="font-size: xx-large;">pointer id: </div>
     <div style="font-size: xx-large;">pointer down: </div>
     <div style="font-size: xx-large;">pointer up: </div>
@@ -72,7 +72,7 @@ p {
 
 <script type="text/javascript">
 
-var board = document.getElementById("board")
+var board = document.getElementById("board");
 var event_number = 0;
 var floating_boxes = {};
 
@@ -107,23 +107,16 @@ function setFloatingBoxPosition(id, position) {
 board.addEventListener('pointerdown', function(event){
     var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
     floating_box.pointer_down.innerHTML += " " + event_number;
-
-    console.log("pointerdown: " + event_number + " ( " + event.pointerId + " )");
-
     event_number++;
 }, false);
 
 board.addEventListener('pointermove', function(event){
     setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
-    
-    console.log("pointermove: " + event_number + " ( " + event.pointerId + " )");
 }, false);
 
 board.addEventListener('pointerup', function(event){
     var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
     floating_box.pointer_up.innerHTML += " " + event_number;
-    console.log("pointerup: " + event_number + " ( " + event.pointerId + " )");
-
     event_number++;
 }, false);
 
