@@ -68,6 +68,7 @@ function floatingBox(id) {
             pointer_down: clone.children[1],
             pointer_up: clone.children[2],
         };
+        floating_boxes[id].box.style.visibility = "visible";
         floating_boxes[id].pointer_id.innerHTML += " " + id;
 
     }
@@ -85,7 +86,6 @@ function setFloatingBoxPosition(id, position) {
 board.addEventListener('pointerdown', function(event){
     var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
     floating_box.pointer_down.innerHTML += " " + event_number;
-    floating_box.box.style.visibility = "visible";
 
     event_number++;
 }, false);
