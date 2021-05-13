@@ -2,18 +2,32 @@
 <html>
 <head>
 <style>
-html, body {
-  width: 100%;
-  height: 100%;
+html,
+body {
+  margin: 0;
+  padding: 0;
 }
 
-.content {
-    width: 100%;
-    height: 100%;
+/* use viewport-relative units to cover page fully */
+body {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.overlay {
+    z-index: 1;
+}
+
+canvas {
+    margin: 5px;
     border-style: solid;
     border-width: 0.1rem;
     border-color: black;
     background-color: lightgray;
+    flex: auto;
+    touch-action: none;
 }
 
 .floating-box{
@@ -28,18 +42,18 @@ html, body {
   visibility: hidden;
   pointer-events: none;
 }
-.overlay {
-    z-index: 1;
+
+p {
+    margin-top: 0;
+    margin-left: 5px;
+    font-size: small;
 }
 
-canvas {
-    touch-action: none;
-}
 </style>
 </head>
 
 <body>
-<canvas id="board" class="content"></canvas>
+<canvas id="board"></canvas>
 
 <div id="overlay" class="overlay"></div>
 <div id="box-pen" class="floating-box" style="left: 10px; top: 10px">
@@ -47,6 +61,13 @@ canvas {
     <div style="font-size: xx-large;">pointer down: </div>
     <div style="font-size: xx-large;">pointer up: </div>
 </div>
+<p> A blue box will follow your pen/finger/mouse and will show the following when PointerEvents happen: <br>
+    pointer id = <a href="https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pointerId" target="_blank">PointerEvent.pointerId</a> <br>
+    pointer down = "th" event to happen in the page, logged on
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/pointerdown_event" target="_blank">PointerEvent.pointerdown</a> <br>
+    pointer up = "th" event to happen in the page, logged on 
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/pointerup_event" target="_blank">PointerEvent.pointerup</a>
+</p>
 </body>
 
 <script type="text/javascript">
