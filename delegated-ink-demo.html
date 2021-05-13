@@ -1,0 +1,148 @@
+<html><head>
+<style>
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+}
+
+canvas {
+    margin: 5px;
+    border-style: solid;
+    border-width: 0.1rem;
+    border-color: black;
+    background-color: lightgray;
+    flex: auto;
+    touch-action: none;
+}
+
+.overlay {
+    z-index: 1;
+}
+
+.floating-box{
+  border: 1px solid rgba(0, 0, 0, 1);
+  position: absolute;
+  z-index: 2;
+  width: 270px;
+  height: 120px;
+  padding:0;
+  font-size: smaller;
+  background-color: aqua;
+  visibility: hidden;
+  pointer-events: none;
+}
+</style>
+</head>
+<body style="margin:0;">
+    <canvas id="board" width="1664" height="999"></canvas>
+    <div id="overlay" class="overlay"></div>
+    <div id="box-pen" class="floating-box">
+        <div style="font-size: xx-large;">pointer id: </div>
+        <div style="font-size: xx-large;">pointer down: </div>
+        <div style="font-size: xx-large;">pointer up: </div>
+    </div>
+</body>
+
+<!-- Globals -->
+<script>
+// map: {id} -> {color}
+let colors = {}
+// use initial set of colors, to make test results easier to see
+let basic_colors = ["white", "maroon", "red", "purple", "fuchsia", "green", "lime", "olive", "yellow", "navy", "blue", "teal", "aqua"];
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getColor(id) {
+    if (!colors[id]){
+        if (basic_colors.length > 0)
+            colors[id] = basic_colors.pop();
+        else 
+            colors[id] = "rgba("+getRandomInt(0,255)+", "+getRandomInt(0,255)+", "+getRandomInt(0,255)+", 1)";
+    }
+    return colors[id];
+}
+
+</script>
+
+<!-- Delegated Ink API test -->
+<script>
+board.width = window.innerWidth;
+board.height = window.innerHeight;
+
+let ctx = board.getContext('2d');
+let presenter = navigator.ink.requestPresenter('delegated-ink-trail', board);
+let move_cnt = 0;
+let style = { color: "rgba(0, 0, 255, 1)", diameter: 10 };
+
+board.addEventListener("pointermove", event => {
+    const pointSize = 15;
+    ctx.fillStyle = getColor(event.pointerId);
+    ctx.fillRect(event.pageX, event.pageY, pointSize, pointSize);
+    presenter.then(function(v) { v.updateInkTrailStartPoint(event, style); });
+});
+</script>
+
+<!-- PointerId, PointerUp/Down test -->
+<script>
+var board = document.getElementById("board");
+var event_number = 0;
+var floating_boxes = {};
+
+// Floating boxes for pointer events info utils
+function floatingBox(id) {
+    if (!floating_boxes[id]){
+        var clone = document.getElementById("box-pen").cloneNode(true);
+        clone.removeAttribute("id");
+        for (var i = 0; i < clone.childrenCount; i++) clone.children[i].removeAttribute("id");
+        document.getElementById("overlay").appendChild(clone);
+        floating_boxes[id] = {
+            box: clone,
+            pointer_id: clone.children[0],
+            pointer_down: clone.children[1],
+            pointer_up: clone.children[2],
+        };
+        floating_boxes[id].box.style.visibility = "visible";
+        floating_boxes[id].box.style.backgroundColor = getColor(id);
+        floating_boxes[id].pointer_id.innerHTML += " " + id;
+
+    }
+    return floating_boxes[id] 
+}
+
+function setFloatingBoxPosition(id, position) {
+    var floating_box = floatingBox(id);
+    const boxOffset = 50;
+    floating_box.box.style.left = (position.x + boxOffset) + "px";
+    floating_box.box.style.top = position.y + "px";
+    return floating_box
+}
+
+// PointerEvent listeners
+board.addEventListener('pointerdown', function(event){
+    var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
+    floating_box.pointer_down.innerHTML += " " + event_number;
+    event_number++;
+}, false);
+
+board.addEventListener('pointermove', function(event){
+    setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
+}, false);
+
+board.addEventListener('pointerup', function(event){
+    var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
+    floating_box.pointer_up.innerHTML += " " + event_number;
+    event_number++;
+}, false);
+</script>
+</html>
