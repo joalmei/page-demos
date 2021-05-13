@@ -87,16 +87,21 @@ board.addEventListener('pointerdown', function(event){
     var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
     floating_box.pointer_down.innerHTML += " " + event_number;
 
+    console.log("pointerdown: " + event_number + " ( " + event.pointerId + " )");
+
     event_number++;
 }, false);
 
 board.addEventListener('pointermove', function(event){
     setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
+    
+    console.log("pointermove: " + event_number + " ( " + event.pointerId + " )");
 }, false);
 
 board.addEventListener('pointerup', function(event){
     var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
     floating_box.pointer_up.innerHTML += " " + event_number;
+    console.log("pointerup: " + event_number + " ( " + event.pointerId + " )");
 
     event_number++;
 }, false);
