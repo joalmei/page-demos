@@ -59,7 +59,6 @@ var floating_boxes = {};
 function floatingBox(id) {
     if (!floating_boxes[id]){
         var clone = document.getElementById("box-pen").cloneNode(true);
-        clone.style.visibility = "visible";
         clone.removeAttribute("id");
         for (var i = 0; i < clone.childrenCount; i++) clone.children[i].removeAttribute("id");
         document.getElementById("overlay").appendChild(clone);
@@ -68,7 +67,6 @@ function floatingBox(id) {
             pointer_id: clone.children[0],
             pointer_down: clone.children[1],
             pointer_up: clone.children[2],
-            is_active: false
         };
         floating_boxes[id].pointer_id.innerHTML += " " + id;
 
@@ -87,22 +85,20 @@ function setFloatingBoxPosition(id, position) {
 board.addEventListener('pointerdown', function(event){
     var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
     floating_box.pointer_down.innerHTML += " " + event_number;
-    floating_box.is_active = true;
+    floating_box.box.style.visibility = "visible";
 
     event_number++;
 }, false);
 
 board.addEventListener('pointermove', function(event){
-    var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
-    if(floating_box.is_active) {
-        document.getElementById("ids").innerHTML += event.pointerId + ", ";
+    if (floating_boxes[event.pointerId]){
+        setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
     }
 }, false);
 
 board.addEventListener('pointerup', function(event){
     var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
     floating_box.pointer_up.innerHTML += " " + event_number;
-    floating_box.is_active = false;
 
     event_number++;
 }, false);
