@@ -91,9 +91,7 @@ board.addEventListener('pointerdown', function(event){
 }, false);
 
 board.addEventListener('pointermove', function(event){
-    if (floating_boxes[event.pointerId]){
-        setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
-    }
+    setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
 }, false);
 
 board.addEventListener('pointerup', function(event){
