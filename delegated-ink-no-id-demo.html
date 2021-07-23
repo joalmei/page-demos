@@ -70,19 +70,23 @@ function getColor(id) {
 
 <!-- Delegated Ink API test -->
 <script>
-board.width = window.innerWidth;
-board.height = window.innerHeight;
+async function launchDelegatedInk() {
+    board.width = window.innerWidth;
+    board.height = window.innerHeight;
 
-let ctx = board.getContext('2d');
-let presenter = navigator.ink.requestPresenter('delegated-ink-trail', board);
-let move_cnt = 0;
-let style = { color: "rgba(0, 0, 255, 1)", diameter: 10 };
+    let ctx = board.getContext('2d');
+    let presenter = await navigator.ink.requestPresenter({presentationArea: board});
+    let move_cnt = 0;
+    let style = { color: "rgba(0, 0, 255, 1)", diameter: 10 };
 
-board.addEventListener("pointermove", event => {
-    const pointSize = 15;
-    ctx.fillStyle = getColor(event.pointerId);
-    ctx.fillRect(event.pageX, event.pageY, pointSize, pointSize);
-    presenter.then(function(v) { v.updateInkTrailStartPoint(event, style); });
-});
+    board.addEventListener("pointermove", event => {
+        const pointSize = 15;
+        ctx.fillStyle = getColor(event.pointerId);
+        ctx.fillRect(event.pageX, event.pageY, pointSize, pointSize);
+        presenter.updateInkTrailStartPoint(event, style);
+    });
+}
+
+launchDelegatedInk();
 </script>
 </html>
