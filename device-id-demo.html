@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* use viewport-relative units to cover page fully */
+body {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.overlay {
+    z-index: 1;
+}
+
+canvas {
+    margin: 5px;
+    border-style: solid;
+    border-width: 0.1rem;
+    border-color: black;
+    background-color: lightgray;
+    flex: auto;
+    touch-action: none;
+}
+
+.floating-box{
+  border: 1px solid rgba(0, 0, 0, 1);
+  position: absolute;
+  z-index: 2;
+  width: 270px;
+  height: 150px;
+  padding:0;
+  font-size: smaller;
+  background-color: aqua;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+p {
+    margin-top: 0;
+    margin-left: 5px;
+    font-size: small;
+}
+
+</style>
+</head>
+
+<body>
+    <canvas id="board" width="1664" height="999"></canvas>
+
+<div id="overlay" class="overlay"></div>
+<div id="box-pen" class="floating-box">
+    <div style="font-size: xx-large;">pointer id: </div>
+    <div style="font-size: xx-large;">pointer down: </div>
+    <div style="font-size: xx-large;">pointer up: </div>
+    <div style="font-size: xx-large;">device id: </div>
+</div>
+<p> A blue box will follow your pen/finger/mouse and will show the following when PointerEvents happen: <br>
+    pointer id = <a href="https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pointerId" target="_blank">PointerEvent.pointerId</a> <br>
+    pointer down = "th" event to happen in the page, logged on
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/pointerdown_event" target="_blank">PointerEvent.pointerdown</a> <br>
+    pointer up = "th" event to happen in the page, logged on 
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/pointerup_event" target="_blank">PointerEvent.pointerup</a>
+    device id = <a href="https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pointerId" target="_blank">PointerEvent.deviceId</a> <br>
+</p>
+</body>
+
+<script type="text/javascript">
+
+var board = document.getElementById("board");
+var event_number = 0;
+var floating_boxes = {};
+
+// Floating boxes for pointer events info utils
+function floatingBox(id) {
+    if (!floating_boxes[id]){
+        var clone = document.getElementById("box-pen").cloneNode(true);
+        clone.removeAttribute("id");
+        for (var i = 0; i < clone.childrenCount; i++) clone.children[i].removeAttribute("id");
+        document.getElementById("overlay").appendChild(clone);
+        floating_boxes[id] = {
+            box: clone,
+            pointer_id: clone.children[0],
+            pointer_down: clone.children[1],
+            pointer_up: clone.children[2],
+            device_id: clone.children[3],
+        };
+        floating_boxes[id].box.style.visibility = "visible";
+        floating_boxes[id].pointer_id.innerHTML += " " + id;
+    }
+    return floating_boxes[id] 
+}
+
+function overlaps(position, box) {
+    // The boxes will overlap if
+    // pos.x in [box.x - w, box.y + w] && pos.y in [box.y - h, box.y + h]
+    // as both boxes have the same widht/height, we can use w = box.offsetWidth, h = box.offsetHeight
+    return position.x > box.offsetLeft - box.offsetWidth && position.x < box.offsetLeft + box.offsetWidth
+        && position.y > box.offsetTop - box.offsetHeight && position.y < box.offsetTop + box.offsetHeight;
+}
+
+function raycastAndReturnFreeSpot(id, position){
+    var on_free_space = false;
+    while (!on_free_space) {
+        on_free_space = true;
+        for (var i in floating_boxes) {
+            if (i == id) continue;
+            let box = floating_boxes[i].box;
+            if(overlaps(position, box)) {
+                on_free_space = false;
+                position.x = box.offsetLeft + box.offsetWidth;
+                break;
+            }
+        }
+    }
+    return position;
+}
+
+function setFloatingBoxPosition(id, position) {
+    var floating_box = floatingBox(id);
+    box_position = raycastAndReturnFreeSpot(id, position);
+    floating_box.box.style.left = box_position.x + "px";
+    floating_box.box.style.top = box_position.y + "px";
+
+    floating_box.device_id.innerHTML = "device id: " + event.deviceId;
+    return floating_box
+}
+
+// PointerEvent listeners
+board.addEventListener('pointerdown', function(event){
+    var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
+    floating_box.pointer_down.innerHTML += " " + event_number;
+    event_number++;
+}, false);
+
+board.addEventListener('pointermove', function(event){
+    setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
+}, false);
+
+board.addEventListener('pointerup', function(event){
+    var floating_box = setFloatingBoxPosition(event.pointerId, {x: event.clientX, y:event.clientY});
+    floating_box.pointer_up.innerHTML += " " + event_number;
+    event_number++;
+}, false);
+
+</script>
+</html>
